@@ -250,7 +250,7 @@ rmvpe
 
 如果训练集过于嘈杂，请使用 crepe 处理 f0
 
-如果省略 f0_predictor 参数，默认值为 pm
+如果省略 f0_predictor 参数，默认值为 dio
 
 尚若需要浅扩散功能（可选），需要增加--use_diff 参数，比如
 
@@ -468,6 +468,6 @@ python compress_model.py -c="configs/config.json" -i="logs/44k/G_30400.pth" -o="
 #### 《[中华人民共和国合同法](http://www.npc.gov.cn/zgrdw/npc/lfzt/rlyw/2016-07/01/content_1992739.htm)》
 
 ## 💪 感谢所有的贡献者
-<a href="https://github.com/svc-develop-team/so-vits-svc/graphs/contributors" target="_blank">
-  <img src="https://contrib.rocks/image?repo=svc-develop-team/so-vits-svc" />
+<a href="https://github.com/ylzz1997/glow-svc/graphs/contributors" target="_blank">
+  <img src="https://contrib.rocks/image?repo=ylzz1997/glow-svc" />
 </a>
