@@ -35,6 +35,18 @@
 
 #### **必须项**
 
+
+##### NSF-HIFIGAN
++ 预训练的 NSF-HIFIGAN 声码器 ：[nsf_hifigan_20221211.zip](https://github.com/openvpi/vocoders/releases/download/nsf-hifigan-v1/nsf_hifigan_20221211.zip)
+  + 解压后，将四个文件放在`pretrain/nsf_hifigan`目录下
+
+```shell
+# nsf_hifigan
+wget -P pretrain/ https://github.com/openvpi/vocoders/releases/download/nsf-hifigan-v1/nsf_hifigan_20221211.zip
+unzip -od pretrain/nsf_hifigan pretrain/nsf_hifigan_20221211.zip
+# 也可手动下载放在 pretrain/nsf_hifigan 目录
+# 地址：https://github.com/openvpi/vocoders/releases/tag/nsf-hifigan-v1
+```
 **编码器(以下编码器需要选择一个使用)**
 
 ##### **1. 若使用 contentvec 作为声音编码器（推荐）**
@@ -82,32 +94,12 @@ wget -P pretrain/ https://huggingface.co/lj1995/VoiceConversionWebUI/resolve/mai
 #### **编码器列表**
 - "vec768l12"
 - "vec256l9"
-- "vec256l9-onnx"
-- "vec256l12-onnx"
-- "vec768l9-onnx"
-- "vec768l12-onnx"
-- "hubertsoft-onnx"
 - "hubertsoft"
 - "whisper-ppg"
 - "cnhubertlarge"
 - "dphubert"
 - "whisper-ppg-large"
 - "wavlmbase+"
-
-##### NSF-HIFIGAN
-
-如果使用`NSF-HIFIGAN 增强器`或`浅层扩散`的话，需要下载预训练的 NSF-HIFIGAN 模型，如果不需要可以不下载
-
-+ 预训练的 NSF-HIFIGAN 声码器 ：[nsf_hifigan_20221211.zip](https://github.com/openvpi/vocoders/releases/download/nsf-hifigan-v1/nsf_hifigan_20221211.zip)
-  + 解压后，将四个文件放在`pretrain/nsf_hifigan`目录下
-
-```shell
-# nsf_hifigan
-wget -P pretrain/ https://github.com/openvpi/vocoders/releases/download/nsf-hifigan-v1/nsf_hifigan_20221211.zip
-unzip -od pretrain/nsf_hifigan pretrain/nsf_hifigan_20221211.zip
-# 也可手动下载放在 pretrain/nsf_hifigan 目录
-# 地址：https://github.com/openvpi/vocoders/releases/tag/nsf-hifigan-v1
-```
 
 
 #### **可选项（强烈建议使用）**
@@ -118,7 +110,7 @@ unzip -od pretrain/nsf_hifigan pretrain/nsf_hifigan_20221211.zip
 + 扩散模型预训练底模文件： `model_0.pt `
   + 放在`logs/44k/diffusion`目录下
 
-从 svc-develop-team（待定）或任何其他地方获取 Glow-SVC 底模
+从本仓库或任何其他地方获取 Glow-SVC 底模
 
 扩散模型引用了 [Diffusion-SVC](https://github.com/CNChTu/Diffusion-SVC) 的 Diffusion Model，底模与 [Diffusion-SVC](https://github.com/CNChTu/Diffusion-SVC) 的扩散模型底模通用，可以去 [Diffusion-SVC](https://github.com/CNChTu/Diffusion-SVC) 获取扩散模型的底模
 
@@ -209,17 +201,6 @@ wavlmbase+
 ```
 
 如果省略 speech_encoder 参数，默认值为 vec768l12
-
-**使用响度嵌入**
-
-若使用响度嵌入，需要增加`--vol_aug`参数，比如：
-
-```shell
-python preprocess_flist_config.py --speech_encoder vec768l12 --vol_aug
-```
-
-使用后训练出的模型将匹配到输入源响度，否则为训练集响度。
-
 #### 此时可以在生成的 config.json 与 diffusion.yaml 修改部分参数
 
 ##### config.json
@@ -262,7 +243,7 @@ rmvpe
 
 如果训练集过于嘈杂，请使用 crepe 处理 f0
 
-如果省略 f0_predictor 参数，默认值为 dio
+如果省略 f0_predictor 参数，默认值为 pm
 
 尚若需要浅扩散功能（可选），需要增加--use_diff 参数，比如
 
@@ -313,7 +294,6 @@ python inference_main.py -m "logs/44k/G_30400.pth" -c "configs/config.json" -n "
 + `-a` | `--auto_predict_f0`：语音转换自动预测音高，转换歌声时不要打开这个会严重跑调
 + `-cm` | `--cluster_model_path`：聚类模型或特征检索索引路径，留空则自动设为各方案模型的默认路径，如果没有训练聚类或特征检索则随便填
 + `-cr` | `--cluster_infer_ratio`：聚类方案或特征检索占比，范围 0-1，若没有训练聚类模型或特征检索则默认 0 即可
-+ `-eh` | `--enhance`：是否使用 NSF_HIFIGAN 增强器，该选项对部分训练集少的模型有一定的音质增强效果，但是对训练好的模型有反面效果，默认关闭
 + `-shd` | `--shallow_diffusion`：是否使用浅层扩散，使用后可解决一部分电音问题，默认关闭，该选项打开时，NSF_HIFIGAN 增强器将会被禁止
 + `-usm` | `--use_spk_mix`：是否使用角色融合/动态声线融合
 + `-lea` | `--loudness_envelope_adjustment`：输入源响度包络替换输出响度包络融合比例，越靠近 1 越使用输出响度包络
@@ -452,24 +432,6 @@ python compress_model.py -c="configs/config.json" -i="logs/44k/G_30400.pth" -o="
 |[2105.02446v3](https://arxiv.org/abs/2105.02446v3) | Shallow Diffusion (PostProcessing)| DiffSinger: Singing Voice Synthesis via Shallow Diffusion Mechanism | [CNChTu/Diffusion-SVC](https://github.com/CNChTu/Diffusion-SVC) |
 |[K-means](https://citeseerx.ist.psu.edu/viewdoc/download;jsessionid=01D65490BADCC216F350D06F84D721AD?doi=10.1.1.308.8619&rep=rep1&type=pdf) | Feature K-means Clustering (PreProcessing)| Some methods for classification and analysis of multivariate observations | 本代码库 |
 | | Feature TopK Retrieval (PreProcessing)| Retrieval based Voice Conversion | [RVC-Project/Retrieval-based-Voice-Conversion-WebUI](https://github.com/RVC-Project/Retrieval-based-Voice-Conversion-WebUI) |
-
-## ☀️ 旧贡献者
-
-因为某些原因原作者进行了删库处理，本仓库重建之初由于组织成员疏忽直接重新上传了所有文件导致以前的 contributors 全部木大，现在在 README 里重新添加一个旧贡献者列表
-
-*某些成员已根据其个人意愿不将其列出*
-
-<table>
-  <tr>
-    <td align="center"><a href="https://github.com/MistEO"><img src="https://avatars.githubusercontent.com/u/18511905?v=4" width="100px;" alt=""/><br /><sub><b>MistEO</b></sub></a><br /></td>
-    <td align="center"><a href="https://github.com/XiaoMiku01"><img src="https://avatars.githubusercontent.com/u/54094119?v=4" width="100px;" alt=""/><br /><sub><b>XiaoMiku01</b></sub></a><br /></td>
-    <td align="center"><a href="https://github.com/ForsakenRei"><img src="https://avatars.githubusercontent.com/u/23041178?v=4" width="100px;" alt=""/><br /><sub><b>しぐれ</b></sub></a><br /></td>
-    <td align="center"><a href="https://github.com/TomoGaSukunai"><img src="https://avatars.githubusercontent.com/u/25863522?v=4" width="100px;" alt=""/><br /><sub><b>TomoGaSukunai</b></sub></a><br /></td>
-    <td align="center"><a href="https://github.com/Plachtaa"><img src="https://avatars.githubusercontent.com/u/112609742?v=4" width="100px;" alt=""/><br /><sub><b>Plachtaa</b></sub></a><br /></td>
-    <td align="center"><a href="https://github.com/zdxiaoda"><img src="https://avatars.githubusercontent.com/u/45501959?v=4" width="100px;" alt=""/><br /><sub><b>zd 小达</b></sub></a><br /></td>
-    <td align="center"><a href="https://github.com/Archivoice"><img src="https://avatars.githubusercontent.com/u/107520869?v=4" width="100px;" alt=""/><br /><sub><b>凍聲響世</b></sub></a><br /></td>
-  </tr>
-</table>
 
 ## 📚 一些法律条例参考
 
