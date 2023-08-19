@@ -201,6 +201,17 @@ wavlmbase+
 ```
 
 如果省略 speech_encoder 参数，默认值为 vec768l12
+
+**使用响度嵌入**
+
+若使用响度嵌入，需要增加`--vol_aug`参数，比如：
+
+```shell
+python preprocess_flist_config.py --speech_encoder vec768l12 --vol_aug
+```
+
+使用后训练出的模型将匹配到输入源响度，否则为训练集响度。
+
 #### 此时可以在生成的 config.json 与 diffusion.yaml 修改部分参数
 
 ##### config.json
@@ -294,6 +305,7 @@ python inference_main.py -m "logs/44k/G_30400.pth" -c "configs/config.json" -n "
 + `-a` | `--auto_predict_f0`：语音转换自动预测音高，转换歌声时不要打开这个会严重跑调
 + `-cm` | `--cluster_model_path`：聚类模型或特征检索索引路径，留空则自动设为各方案模型的默认路径，如果没有训练聚类或特征检索则随便填
 + `-cr` | `--cluster_infer_ratio`：聚类方案或特征检索占比，范围 0-1，若没有训练聚类模型或特征检索则默认 0 即可
++ `-eh` | `--enhance`：是否使用 NSF_HIFIGAN 增强器，该选项对部分训练集少的模型有一定的音质增强效果，但是对训练好的模型有反面效果，默认关闭
 + `-shd` | `--shallow_diffusion`：是否使用浅层扩散，使用后可解决一部分电音问题，默认关闭，该选项打开时，NSF_HIFIGAN 增强器将会被禁止
 + `-usm` | `--use_spk_mix`：是否使用角色融合/动态声线融合
 + `-lea` | `--loudness_envelope_adjustment`：输入源响度包络替换输出响度包络融合比例，越靠近 1 越使用输出响度包络
